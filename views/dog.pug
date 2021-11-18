@@ -5,34 +5,8 @@ block content
   p Sindhura Byrapuneni
   div(class="container-fluid")
         div(class="row")
-            -
-                let watch = [
-                    {
-                        "Brand": "Bulldog",
-                        "price": 500,
-                        "color": "white"
-                    },
-                    {
-                        "Brand": "Pug",
-                        "price": 1000,
-                        "color": "Black"
-                    },
-                    {
-                        "Brand": "Siberian Husky",
-                        "price": 900,
-                        "color": "grey"
-                    },                  
-                     {
-                        "Brand": "Golden Retriever",
-                        "price": 1500,
-                        "color": "golden"
-                    },    
-                     {
-                        "Brand": "Labrador Retriever",
-                        "price": 2000,
-                        "color": "brown"
-                    },     
-                ]
+
+            let items = results
             each v,index in watch  
                 div(class="col-sm-2" onclick=`buy(${index})`) #{v.Brand}
                 div(class="col-sm-2" onclick=`buy(${index})`) #{v.price}

@@ -83,7 +83,6 @@ async function recreateDB(){
       if(err) return console.error(err); 
       console.log("Third object saved") 
   }); 
-  
 } 
 
  
