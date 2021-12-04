@@ -1,69 +1,56 @@
 var express = require('express'); 
+var passport = require('passport'); 
 var router = express.Router(); 
+var Account = require('../models/account'); 
  
-// Require controller modules. 
-var api_controller = require('../controller/api'); 
-var dog_controller = require('../controller/dog'); 
+router.get('/', function (req, res) { 
+    res.render('index', { title: 'dog App', user : req.user }); 
+}); 
  
-/// API ROUTE /// 
+router.get('/register', function(req, res) { 
+    res.render('register', { title: 'dog App Registration'}); 
+}); 
  
-// GET resources base. 
-router.get('/resource', api_controller.api); 
+router.post('/register', function(req, res) { 
+  Account.findOne({ username : req.body.username },  
+    function(err, user) { 
+       if(req.session.returnTo) 
+      res.redirect(req.session.returnTo); 
+      if(user == {} ){ 
+        return res.render('register', { title: 'Registration',  
+                   message: 'Existing User', account : req.body.username }) 
+      } 
+      let newAccount = new Account({ username : req.body.username }); 
+      Account.register(newAccount, req.body.password, function(err, user){ 
+        if (err) { 
+          return res.render('register', { title: 'Registration',  
+                    message: 'access error', account : req.body.username }) 
+        } 
+        if(!user){ 
+          return res.render('register',{ title: 'Registration',  
+                    message: 'access error', account : req.body.username }) 
+        }  
+        console.log('Sucess, redirect'); 
+        res.redirect('/'); 
+      }) 
+    })    
+  }) 
+  
+router.get('/login', function(req, res) { 
+    res.render('login', { title: 'dog App Login', user : req.user }); 
+}); 
  
-/// dog ROUTES /// 
+router.post('/login', passport.authenticate('local'), function(req, res) { 
+    res.redirect('/'); 
+}); 
  
-// POST request for creating a dog.  
-router.post('/dog', dog_controller.dog_create_post); 
-
+router.get('/logout', function(req, res) { 
+    req.logout(); 
+    res.redirect('/'); 
+}); 
  
-// DELETE request to delete dog. 
-router.delete('/dog/:id', dog_controller.dog_delete); 
+router.get('/ping', function(req, res){ 
+    res.status(200).send("pong!"); 
+}); 
  
-// PUT request to update dog. 
-router.put('/dog/:id', 
-dog_controller.dog_update_put); 
- 
-// GET request for one dog. 
-router.get('/dog/:id', dog_controller.dog_detail); 
- 
-// GET request for list of all dog items. 
-router.get('/dog', dog_controller.dog_list);
-// GET request for one dog. 
-router.get('/dogs/:id', dog_controller.dog_detail);
-// for a specific dog. 
-exports.dog_detail = async function(req, res) { 
-    console.log("detail"  + req.params.id) 
-    try { 
-        result = await dog.findById( req.params.id) 
-        res.send(result) 
-    } catch (error) { 
-        res.status(500) 
-        res.send(`{"error": document for id ${req.params.id} not found`); 
-    } 
-};  
-
-
-//Handle dog update form on PUT. 
-exports.dog_update_put = async function(req, res) { 
-    console.log(`update on id ${req.params.id} with body 
-${JSON.stringify(req.body)}`) 
-    try { 
-        let toUpdate = await dog.findById( req.params.id) 
-        // Do updates of properties 
-        if(req.body.dog_type)  
-               toUpdate.dog_type = req.body.dog_type; 
-        if(req.body.cost) toUpdate.cost = req.body.cost; 
-        if(req.body.color) toUpdate.size = req.body.color; 
-        let result = await toUpdate.save(); 
-        console.log("Sucess " + result) 
-        res.send(result) 
-    } catch (err) { 
-        res.status(500) 
-        res.send(`{"error": ${err}: Update for id ${req.params.id} failed`); 
-    } 
-    if(req.body.checkboxsale) toUpdate.sale = true; 
-else toUpdate.same = false; 
- 
-}; 
- 
-module.exports = router;
+module.exports = router; 

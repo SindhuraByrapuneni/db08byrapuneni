@@ -23,3 +23,7 @@ router.get('/create', dog_controlers.dog_create_Page);
 router.get('/update', dog_controlers.dog_update_Page); 
 /* GET create dog page */ 
 router.get('/delete', dog_controlers.dog_delete_Page); 
+/* GET update dog page */ 
+router.get('/update', dog_controlers.dog_update_Page); 
+/* GET update dog page */ 
+router.get('/update', secured,dog_controlers.dog_update_Page); 

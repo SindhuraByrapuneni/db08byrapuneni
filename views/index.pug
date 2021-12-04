@@ -1,17 +1,22 @@
-extends layout
-
-block content
-  h1= title
-  p iam sweet 
-  button(type="button", class="btn btn-primary", onclick="update()") Press Me for the contents
-  |
-  div(id="target") Display
-     a(href = '/dog') dog   Page link
-   
-  |
-  script. 
-    let client_count = 0;
-    function update() {
-      client_count = client_count + 1;
-      document.getElementById("target").innerHTML = `Value now ${client_count}`  ;
+extends layout 
+ 
+block content 
+  if (!user) 
+    a(href="/login") Login 
+    br 
+    a(href="/register") Register 
+  if (user) 
+    p You are currently logged in as #{user.username} 
+    a(href="/dog") Take me to dogs 
+    br 
+    a(href="/logout") Logout 
       }
+      // A little function to check if we have an authorized user and continue on or 
+// redirect to login. 
+const secured = (req, res, next) => { 
+    if (req.user){ 
+      return next(); 
+    } 
+    req.session.returnTo = req.originalUrl; 
+    res.redirect("/login"); 
+  } 
